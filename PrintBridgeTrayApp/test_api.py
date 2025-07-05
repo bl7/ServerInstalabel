@@ -16,8 +16,14 @@ BASE_URL = "http://localhost:8080"
 
 def create_test_image():
     """Create a simple test PNG image"""
-    # Create a 200x100 image with text
-    img = Image.new('RGB', (200, 100), color='white')
+    # Convert mm to pixels at 203 DPI
+    # 1 inch = 25.4 mm, so 1 mm = 203/25.4 = 7.99 pixels
+    mm_to_pixels = 203 / 25.4
+    width_pixels = int(56 * mm_to_pixels)  # 56mm
+    height_pixels = int(31 * mm_to_pixels)  # 31mm
+    
+    # Create image with calculated dimensions
+    img = Image.new('RGB', (width_pixels, height_pixels), color='white')
     draw = ImageDraw.Draw(img)
     
     # Add some text
@@ -27,8 +33,12 @@ def create_test_image():
     except:
         font = None
     
-    draw.text((10, 40), "Test Print", fill='black', font=font)
-    draw.rectangle([5, 5, 195, 95], outline='black', width=2)
+    # Calculate text position (center-ish)
+    text_x = width_pixels // 4
+    text_y = height_pixels // 3
+    
+    draw.text((text_x, text_y), "56x31mm", fill='black', font=font)
+    draw.rectangle([2, 2, width_pixels-2, height_pixels-2], outline='black', width=1)
     
     # Convert to base64
     buffer = io.BytesIO()
